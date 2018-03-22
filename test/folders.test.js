@@ -108,48 +108,50 @@ describe.only('Noteful API - Folders', function () {
 
   });
 
-  describe('POST /api/notes', function () {
+  describe.only('POST /api/notes', function () {
 
-    it('should create and return a new item when provided valid data', function () {
-      const newItem = {
-        'title': 'The best article about cats ever!',
-        'content': 'Lorem ipsum dolor sit amet, sed do eiusmod tempor...'
+    it('should create and return a new folder when provided valid data', function () {
+      const newFolder = {
+        'name': 'My throw-away folder!'
       };
       let res;
       return chai.request(app)
-        .post('/api/notes')
-        .send(newItem)
+        .post('/api/folders')
+        .send(newFolder)
         .then(function (_res) {
           res = _res;
           expect(res).to.have.status(201);
           expect(res).to.have.header('location');
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
-          expect(res.body).to.have.keys('id', 'title', 'content', 'created');
-          return Note.findById(res.body.id);
+          expect(res.body).to.have.keys('id', 'name');
+          return Folder.findById(res.body.id);
         })
         .then(data => {
-          expect(res.body.title).to.equal(data.title);
-          expect(res.body.content).to.equal(data.content);
+          console.log(data);
+          console.log(res.body);
+          expect(res.body.name).to.equal(data.name);
+          expect(res.body.id).to.equal(data.id);
         });
     });
 
-//     it('should return an error when posting an object with a missing "title" field', function () {
-//       const newItem = {
-//         'content': 'Lorem ipsum dolor sit amet, sed do eiusmod tempor...'
-//       };
+    it('should return an error when posting an object with a missing "name" field', function () {
+      const newFolder = {
+        'name': ''
+      };
 
-//       return chai.request(app)
-//         .post('/api/notes')
-//         .send(newItem)
-//         .catch(err => err.response)
-//         .then(res => {
-//           expect(res).to.have.status(400);
-//           expect(res).to.be.json;
-//           expect(res.body).to.be.a('object');
-//           expect(res.body.message).to.equal('Missing `title` in request body');
-//         });
-//     });
+      return chai.request(app)
+        .post('/api/folders')
+        .send(newFolder)
+        .catch(err => err.response)
+        .then(res => {
+          expect(res).to.have.status(400);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body.message).to.equal('Missing `name` in request body');
+          console.log(res.body.message);
+        });
+    });
 
   });
 
