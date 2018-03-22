@@ -155,7 +155,7 @@ describe.only('Noteful API - Folders', function () {
 
   });
 
-  describe.only('PUT /api/folders/:id', function () {
+  describe('PUT /api/folders/:id', function () {
 
     it('should update the folder when provided proper valid data', function () {
       const updateFolder = {
@@ -230,21 +230,24 @@ describe.only('Noteful API - Folders', function () {
 
   });
 
-//   describe('DELETE  /api/notes/:id', function () {
+  describe.only('DELETE  /api/folders/:id', function () {
 
-//     it('should delete an item by id', function () {
-//       let data;
-//       return Note.findOne()
-//         .then(_data => {
-//           data = _data;
-//           return chai.request(app).delete(`/api/notes/${data.id}`);
-//         })
-//         .then(function (res) {
-//           expect(res).to.have.status(204);
-//         });
-//     });
+    it('should delete a folder by id', function () {
+      let data;
+      return Folder.findOne()
+        .then(_data => {
+          data = _data;
+          return chai.request(app).delete(`/api/folders/${data.id}`);
+        })
+        .then(function (res) {
+          console.log(res.body);
+          expect(res).to.have.status(204);
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.be.empty;
+        });
+    });
 
-//   });
+  });
 
 });
 
