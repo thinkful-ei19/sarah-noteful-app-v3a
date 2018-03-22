@@ -81,12 +81,52 @@ router.post('/folders', (req, res, next) => {
     });
 });
 
-
-
 // PUT /folders by id to update a folder name
 // Add validation which protects against missing name field
 // Add validation which protects against invalid Mongo ObjectIds and prevents needless database queries.
 // Add condition error check which catches duplicate folder names and provides helpful user feedback
+
+router.put('/folders/:id', (req, res, next) => {
+  const {id} = req.params;
+  console.log(id);
+
+  const {name} = req.body;
+  
+  console.log(name);
+
+  if(!name) {
+    const err = new Error('Missing `name` in request body');
+    err.status = 400;
+    return next(err);
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    const err = new Error('The `id` is not valid');
+    err.status = 400;
+    return next(err);
+  }
+
+  const updatedFolder = {name};
+  console.log(updatedFolder);
+
+  return Folder.findByIdAndUpdate(id, updatedFolder, {new: true})
+    .then(result => {
+      console.log(res.body);
+      if (result) {
+        res.json(result);
+        console.log(result);
+      } else {
+        next();
+      }
+    })
+    .catch(err => {
+      if (err.code === 11000) {
+        err = new Error('The folder name already exists');
+        err.status = 400;
+      }
+      next(err);
+    });
+});
 
 
 // DELETE /folders by id which deletes the folder AND the notes contents
