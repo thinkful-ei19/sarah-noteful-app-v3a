@@ -6,7 +6,7 @@ const folderSchema = new mongoose.Schema({
   name: { type: String, unique: true }
 });
 
-noteSchema.set('toObject', {
+folderSchema.set('toObject', {
   transform: function (doc, ret) {
     ret.id = ret._id;
     delete ret._id;
