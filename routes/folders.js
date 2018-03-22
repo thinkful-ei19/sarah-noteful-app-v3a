@@ -26,6 +26,29 @@ router.get('/folders', (req, res, next) => {
 // Add validation that protects against invalid Mongo ObjectIds and prevents unnecessary database queries.
 // Add condition that checks the results and returns a 200 response or a 404 Not Found
 
+router.get('/folders/:id', (req, res, next) => {
+  const {id} = req.params;
+  console.log(id);
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    const err = new Error('Not a valid `id`');
+    err.status = 400;
+    return next(err);
+  }
+
+  Folder.findById(id)
+    .then(result => {
+      if (result) {
+        res.json(result);
+      } else {
+        next();
+      }
+    })
+    .catch(err =>{
+      next(err);
+    });
+});
+
 
 // POST /folders to create a new folder
 // Add validation which protects against missing name field
