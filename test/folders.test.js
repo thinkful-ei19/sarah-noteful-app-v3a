@@ -108,7 +108,7 @@ describe.only('Noteful API - Folders', function () {
 
   });
 
-  describe.only('POST /api/notes', function () {
+  describe('POST /api/notes', function () {
 
     it('should create and return a new folder when provided valid data', function () {
       const newFolder = {
@@ -155,84 +155,80 @@ describe.only('Noteful API - Folders', function () {
 
   });
 
-//   describe('PUT /api/notes/:id', function () {
+  describe.only('PUT /api/folders/:id', function () {
 
-//     it('should update the note when provided proper valid data', function () {
-//       const updateItem = {
-//         'title': 'What about dogs?!',
-//         'content': 'woof woof'
-//       };
-//       let data;
-//       return Note.findOne()
-//         .then(_data => {
-//           data = _data;
-//           return chai.request(app)
-//             .put(`/api/notes/${data.id}`)
-//             .send(updateItem);
-//         })
-//         .then(function (res) {
-//           expect(res).to.have.status(200);
-//           expect(res).to.be.json;
-//           expect(res.body).to.be.a('object');
-//           expect(res.body).to.have.keys('id', 'title', 'content', 'created');
+    it('should update the folder when provided proper valid data', function () {
+      const updateFolder = {
+        'name': 'New name'
+      };
+      let data;
+      return Folder.findOne()
+        .then(_data => {
+          data = _data;
+          return chai.request(app)
+            .put(`/api/folders/${data.id}`)
+            .send(updateFolder);
+        })
+        .then(function (res) {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.have.keys('id', 'name');
 
-//           expect(res.body.id).to.equal(data.id);
-//           expect(res.body.title).to.equal(updateItem.title);
-//           expect(res.body.content).to.equal(updateItem.content);
-//         });
-//     });
+          expect(res.body.id).to.equal(data.id);
+          expect(res.body.name).to.equal(updateFolder.name);
+        });
+    });
 
 
-//     it('should respond with a 400 for improperly formatted id', function () {
-//       const updateItem = {
-//         'title': 'What about dogs?!',
-//         'content': 'woof woof'
-//       };
-//       const badId = '99-99-99';
+    it('should respond with a 400 for improperly formatted id', function () {
+      const updateFolder = {
+        'name': 'New name'
+      };
+      const badId = '99-99-99';
 
-//       return chai.request(app)
-//         .put(`/api/notes/${badId}`)
-//         .send(updateItem)
-//         .catch(err => err.response)
-//         .then(res => {
-//           expect(res).to.have.status(400);
-//           expect(res.body.message).to.eq('The `id` is not valid');
-//         });
-//     });
+      return chai.request(app)
+        .put(`/api/folders/${badId}`)
+        .send(updateFolder)
+        .catch(err => err.response)
+        .then(res => {
+          expect(res).to.have.status(400);
+          expect(res.body.message).to.eq('The `id` is not valid');
+        });
+    });
 
-//     it('should respond with a 404 for an invalid id', function () {
-//       const updateItem = {
-//         'title': 'What about dogs?!',
-//         'content': 'woof woof'
-//       };
+    it('should respond with a 404 for an invalid id', function () {
+      const updateFolder = {
+        'name': 'New name'
+      };
 
-//       return chai.request(app)
-//         .put('/api/notes/AAAAAAAAAAAAAAAAAAAAAAAA')
-//         .send(updateItem)
-//         .catch(err => err.response)
-//         .then(res => {
-//           expect(res).to.have.status(404);
-//         });
-//     });
+      return chai.request(app)
+        .put('/api/folders/AAAAAAAAAAAAAAAAAAAAAAAA')
+        .send(updateFolder)
+        .catch(err => err.response)
+        .then(res => {
+          expect(res).to.have.status(404);
+        });
+    });
 
-//     it('should return an error when missing "title" field', function () {
-//       const updateItem = {
-//         'foo': 'bar'
-//       };
+    it('should return an error when missing "name" field', function () {
+      const updateFolder = {
+        'up': 'down'
+      };
 
-//       return chai.request(app)
-//         .put('/api/notes/9999')
-//         .send(updateItem)
-//         .catch(err => err.response)
-//         .then(res => {
-//           expect(res).to.have.status(400);
-//           expect(res).to.be.json;
-//           expect(res.body).to.be.a('object');
-//           expect(res.body.message).to.equal('Missing `title` in request body');
-//         });
-//     });
+      return chai.request(app)
+        .put('/api/folders/111111111111111111111102')
+        .send(updateFolder)
+        .catch(err => err.response)
+        .then(res => {
+          expect(res).to.have.status(400);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body.message).to.equal('Missing `name` in request body');
+        });
+    });
 
-//   });
+  });
 
 //   describe('DELETE  /api/notes/:id', function () {
 
