@@ -15,7 +15,7 @@ const expect = chai.expect;
 
 chai.use(chaiHttp);
 
-describe.only('Noteful API - Folders', function () {
+describe('Noteful API - Folders', function () {
   before(function () {
     return mongoose.connect(TEST_MONGODB_URI);
   });
@@ -230,7 +230,7 @@ describe.only('Noteful API - Folders', function () {
 
   });
 
-  describe.only('DELETE  /api/folders/:id', function () {
+  describe('DELETE  /api/folders/:id', function () {
 
     it('should delete a folder by id', function () {
       let data;

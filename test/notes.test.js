@@ -7,19 +7,23 @@ const mongoose = require('mongoose');
 const { TEST_MONGODB_URI } = require('../config');
 
 const Note = require('../models/note');
+const Folder = require('../models/folder');
 const seedNotes = require('../db/seed/notes');
+const seedFolders = require('../db/seed/folders');
 
 const expect = chai.expect;
 
 chai.use(chaiHttp);
 
-describe('Noteful API - Notes', function () {
+describe.only('Noteful API - Notes', function () {
   before(function () {
     return mongoose.connect(TEST_MONGODB_URI);
   });
 
   beforeEach(function () {
-    return Note.insertMany(seedNotes);
+    const insertNotes = Note.insertMany(seedNotes);
+    const insertFolders = Folder.insertMany(seedFolders);
+    return Promise.all([insertNotes, insertFolders]);
   });
 
   afterEach(function () {
@@ -30,7 +34,7 @@ describe('Noteful API - Notes', function () {
     return mongoose.disconnect();
   });
 
-  describe('GET /api/notes', function () {
+  describe.only('GET /api/notes', function () {
 
     it('should return the correct number of Notes and correct fields', function () {
       const dbPromise = Note.find();
@@ -44,7 +48,7 @@ describe('Noteful API - Notes', function () {
           expect(res.body).to.have.length(data.length);
           res.body.forEach(function (item) {
             expect(item).to.be.a('object');
-            expect(item).to.have.keys('id', 'title', 'content', 'created');
+            expect(item).to.have.keys('id', 'title', 'content', 'created', 'folderId');
           });
         });
     });
