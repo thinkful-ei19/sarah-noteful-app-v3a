@@ -6,10 +6,21 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 const Folder = require('../models/folder');
+const Note = require('../models/note');
 
-// GET all /folders
+//GET all /folders
 // Sort the response by name
+router.get('/folders', (req, res, next) => {
 
+  Folder.find()
+    .sort('name')
+    .then(results => {
+      res.json(results);
+    })
+    .catch(err => {
+      next(err);
+    });
+});
 
 // GET /folders by id
 // Add validation that protects against invalid Mongo ObjectIds and prevents unnecessary database queries.
@@ -30,3 +41,7 @@ const Folder = require('../models/folder');
 
 // DELETE /folders by id which deletes the folder AND the notes contents
 // A successful delete returns a 204 status
+
+
+module.exports = router;
+
