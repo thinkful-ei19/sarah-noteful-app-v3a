@@ -132,6 +132,18 @@ router.put('/folders/:id', (req, res, next) => {
 // DELETE /folders by id which deletes the folder AND the notes contents
 // A successful delete returns a 204 status
 
+router.delete('/folders/:id', (req, res, next) => {
+  const {id} = req.params;
+
+  Folder.findByIdAndRemove(id)
+    .then(() => {
+      res.status(204).end();
+    })
+    .catch(err => {
+      next(err);
+    });
+});
+
 
 module.exports = router;
 
