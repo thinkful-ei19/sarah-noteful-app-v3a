@@ -55,6 +55,33 @@ router.get('/folders/:id', (req, res, next) => {
 // Add condition that checks for a duplicate key error code 11000 and responds with a helpful error message (see below)
 // A successful insert returns a location header and a 201 status
 
+router.post('/folders', (req, res, next) => {
+  const {name} = req.body;
+  
+  const newFolder = {name};
+  console.log(newFolder);
+
+  if (!name) {
+    const err = new Error('Missing `name` in request body');
+    err.status = 400;
+    return next(err);
+  }
+
+  Folder.create(newFolder)
+  //.insert(newFolder)
+    .then(result => {
+      res.location(`${req.originalUrl}/${result.id}`).status(201).json(result);
+    })
+    .catch(err => {
+      if (err.code === 11000) {
+        err = new Error('The folder name already exists');
+        err.status = 400;
+      }
+      next(err);
+    });
+});
+
+
 
 // PUT /folders by id to update a folder name
 // Add validation which protects against missing name field
