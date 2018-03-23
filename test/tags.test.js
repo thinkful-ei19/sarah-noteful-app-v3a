@@ -105,7 +105,7 @@ describe.only('Noteful API - Tags', function () {
         .get(`/api/tags/${badId}`)
         .catch(err => err.response)
         .then(res => {
-          expect(res).to.have.status(400)
+          expect(res).to.have.status(400);
           expect(res.body.message).to.equal('Not a valid `id`');
         });
     });
@@ -117,6 +117,50 @@ describe.only('Noteful API - Tags', function () {
         .catch(err => err.response)
         .then(res => {
           expect(res).to.have.status(404);
+        });
+    });
+  });
+
+  //POST tags tests
+  describe.only('POST new tags', function() {
+    it('should POST new tags with the right fields', function() {
+      const newTag = {'name': 'Test tag'};
+      let res;
+      return chai.request(app)
+        .post('/api/tags')
+        .send(newTag)
+        .then(function(_res) {
+          res = _res;
+          expect(res).to.have.status(201);
+          expect(res).to.have.header('location');
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.have.keys('id', 'name');
+          return Tag.findById(res.body.id);
+        })
+        .then(data => {
+          console.log(data);
+          console.log(res.body);
+          expect(res.body.name).to.equal(data.name);
+          expect(res.body.id).to.equal(data.id);
+        });
+    });
+
+    it('should return an error when posting an object missing "name" field', function () {
+      const newTag = {
+        'name': ''
+      };
+
+      return chai.request(app)
+        .post('/api/tags')
+        .send(newTag)
+        .catch(err => err.response)
+        .then(res => {
+          expect(res).to.have.status(400);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body.message).to.equal('Missing `name` in request body');
+          console.log(res.body.message);
         });
     });
   });
