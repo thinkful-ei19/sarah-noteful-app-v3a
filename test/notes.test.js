@@ -23,6 +23,7 @@ describe.only('Noteful API - Notes', function () {
   beforeEach(function () {
     const insertNotes = Note.insertMany(seedNotes);
     const insertFolders = Folder.insertMany(seedFolders);
+    console.log('ran');
     return Promise.all([insertNotes, insertFolders]);
   });
 
@@ -34,7 +35,7 @@ describe.only('Noteful API - Notes', function () {
     return mongoose.disconnect();
   });
 
-  describe.only('GET /api/notes', function () {
+  describe('GET /api/notes', function () {
 
     it('should return the correct number of Notes and correct fields', function () {
       const dbPromise = Note.find();
@@ -97,11 +98,13 @@ describe.only('Noteful API - Notes', function () {
           return chai.request(app).get(`/api/notes/${data.id}`);
         })
         .then((res) => {
+          console.log(data);
+          console.log(res.body);
           expect(res).to.have.status(200);
           expect(res).to.be.json;
 
           expect(res.body).to.be.an('object');
-          expect(res.body).to.have.keys('id', 'title', 'content', 'created');
+          expect(res.body).to.have.keys('id', 'title', 'content', 'created', 'folderId');
 
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(data.title);
@@ -197,7 +200,7 @@ describe.only('Noteful API - Notes', function () {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
-          expect(res.body).to.have.keys('id', 'title', 'content', 'created');
+          expect(res.body).to.have.keys('id', 'title', 'content', 'created', 'folderId');
 
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(updateItem.title);

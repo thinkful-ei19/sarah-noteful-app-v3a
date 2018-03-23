@@ -9,13 +9,17 @@ const Note = require('../models/note');
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/notes', (req, res, next) => {
-  const { searchTerm } = req.query;
+  const { searchTerm, folderId } = req.query;
 
   let filter = {};
 
   if (searchTerm) {
     const re = new RegExp(searchTerm, 'i');
     filter.title = { $regex: re };
+  }
+
+  if (folderId) {
+    filter.folderId = folderId;
   }
 
   Note.find(filter)
@@ -53,7 +57,7 @@ router.get('/notes/:id', (req, res, next) => {
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/notes', (req, res, next) => {
-  const { title, content } = req.body;
+  const { title, content, folderId } = req.body;
 
   /***** Never trust users - validate input *****/
   if (!title) {
@@ -62,7 +66,7 @@ router.post('/notes', (req, res, next) => {
     return next(err);
   }
 
-  const newItem = { title, content };
+  const newItem = { title, content, folderId };
 
   Note.create(newItem)
     .then(result => {
@@ -76,7 +80,7 @@ router.post('/notes', (req, res, next) => {
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/notes/:id', (req, res, next) => {
   const { id } = req.params;
-  const { title, content } = req.body;
+  const { title, content, folderId } = req.body;
 
   /***** Never trust users - validate input *****/
   if (!title) {
@@ -91,7 +95,7 @@ router.put('/notes/:id', (req, res, next) => {
     return next(err);
   }
 
-  const updateItem = { title, content };
+  const updateItem = { title, content, folderId };
   const options = { new: true };
 
   Note.findByIdAndUpdate(id, updateItem, options)
