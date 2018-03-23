@@ -47,6 +47,37 @@ router.get('/tags/:id', (req, res, next) => {
     });
 });
 
+//POST new tag 
+// Add validation that protects against missing name field
+// A successful insert returns a location header and a 201 status
+// Add condition that checks for a duplicate key error with code 11000 and responds with a helpful error message
+
+router.post('/tags', (req, res, next) => {
+  const {name} = req.body;
+  console.log({name});
+
+  if(!name) {
+    const err = new Error('Missing `name` in request body');
+    err.status = 400;
+    return next(err);
+  }
+
+  const newTag = {name};
+  
+  Tag.create(newTag)
+    .then(result => {
+      res.location(`${req.originalUrl}/${result.id}`).status(201).json(result);
+    })
+    .catch(err => {
+      if (err.code === 11000) {
+        err = new Error('The tag name already exists');
+        err.status = 400;
+      }
+      next(err);
+    });
+
+});
+
 
 module.exports = router;
 
