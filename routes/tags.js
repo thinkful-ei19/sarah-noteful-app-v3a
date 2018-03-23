@@ -9,8 +9,18 @@ const mongoose = require('mongoose');
 // const Note = require('../models/note');
 const Tag = require('../models/tag');
 
+//GET all tags endpoint
+router.get('/tags', (req, res, next) => {
+  Tag.find()
+    .sort('name')
+    .then(result => {
+      res.json(result);
+    })
+    .catch(err => {
+      next(err);
+    });
+});
 
 
-
-module.exports = router:
+module.exports = router;
 
