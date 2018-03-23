@@ -78,6 +78,44 @@ router.post('/tags', (req, res, next) => {
 
 });
 
+//PUT tags update tag by id
+// Add validation which protects against missing name field
+// Add validation which protects against an invalid ObjectId
+// Add condition that checks the result and returns a 200 response with the result or a 404 Not Found
+// Ensure you are returning the updated/modified document, not the document prior to the update
+// Add condition that checks for a duplicate key error with code 11000 and responds with a helpful error message
+
+router.put('/tags/:id', (req, res, next) => {
+  const {id} = req.params;
+  const{name} = req.body;
+  const updateTag = {name};
+
+  if(!name) {
+    const err = new Error('Missing `name` in request body');
+    err.status = 400;
+    return next(err);
+  }
+
+  if(!mongoose.Types.ObjectId.isValid(id)) {
+    const err = new Error('Not a valid id');
+    err.status = 400;
+    next(err);
+  }
+
+  const options = {new: true};
+  Tag.findByIdAndUpdate(id, updateTag, options)
+    .then(result => {
+      res.json(result);
+    })
+    .catch(err => {
+      if (err.code === 11000) {
+        err = new Error('The tag name already exists');
+        err.status = 400;
+      }
+      next(err);
+    });
+});
+
 
 module.exports = router;
 
