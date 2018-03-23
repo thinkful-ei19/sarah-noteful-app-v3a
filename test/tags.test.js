@@ -53,7 +53,7 @@ describe.only('Noteful API - Tags', function () {
   });
 
   //GET all tags tests
-  describe.only('GET /api/tags', function () {
+  describe('GET /api/tags', function () {
     it('should return the correct number of Folders and correct fields', function () {
       const dbPromise = Tag.find();
       //console.log(dbPromise);
@@ -77,5 +77,47 @@ describe.only('Noteful API - Tags', function () {
 
   });
 
+  //GET tags by id tests
+  describe('GET tags by id /api/tags/:id', function() {
+    it('should return the correct tag for a given id', function() {
+      let data;
+      return Tag.findOne()
+        .then(_data => {
+          data = _data;
+          return chai.request(app).get(`/api/tags/${data.id}`);
+        })
+        .then((res) => {
+          console.log(res.body);
+          console.log(data);
+          expect(res.body).to.be.a('object');
+          expect(res).to.be.json;
+          expect(res).to.have.status(200);
+          expect(res.body).to.have.keys('id', 'name');
 
+          expect(res.body.id).to.equal(data.id);
+          expect(res.body.name).to.equal(data.name);
+        });
+    });
+
+    it('should return a 400 error if id is not valid', function() {
+      const badId = 'sarah';
+      return chai.request(app)
+        .get(`/api/tags/${badId}`)
+        .catch(err => err.response)
+        .then(res => {
+          expect(res).to.have.status(400)
+          expect(res.body.message).to.equal('Not a valid `id`');
+        });
+    });
+
+    it('should respond with a 404 for non-existent id', function () {
+
+      return chai.request(app)
+        .get('/api/tags/AAAAAAAAAAAAAAAAAAAAAAAA')
+        .catch(err => err.response)
+        .then(res => {
+          expect(res).to.have.status(404);
+        });
+    });
+  });
 });
