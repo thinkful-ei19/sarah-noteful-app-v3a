@@ -9,7 +9,7 @@ const Note = require('../models/note');
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/notes', (req, res, next) => {
-  const { searchTerm, folderId } = req.query;
+  const { searchTerm, folderId, tags } = req.query;
 
   let filter = {};
 
@@ -23,6 +23,7 @@ router.get('/notes', (req, res, next) => {
   }
 
   Note.find(filter)
+    .populate('tags')
     .sort('created')
     .then(results => {
       res.json(results);

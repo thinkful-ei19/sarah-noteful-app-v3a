@@ -141,9 +141,6 @@ router.delete('/tags/:id', (req, res, next) => {
   // );
 
   // Promise.all([deleteTagPromise, deleteInNotesPromise])
-  //   .then(resultsArray => {
-  //     const tagResult = resultsArray[0];
-  // .then({})
   // .then(() => {
   //   res.status(204).end();
   // })
