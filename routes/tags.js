@@ -6,7 +6,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 // const Folder = require('../models/folder');
-// const Note = require('../models/note');
+const Note = require('../models/note');
 const Tag = require('../models/tag');
 
 //GET all tags endpoint
@@ -116,6 +116,38 @@ router.put('/tags/:id', (req, res, next) => {
     });
 });
 
+//DELETE tags endpoint delete tags by id
+// Remove the tag
+// Using $pull, remove the tag from the tags array in the notes collection.
+// Add condition that checks the result and returns a 200 response with the result or a 204 status
+router.delete('/tags/:id', (req, res, next) => {
+  const {id} = req.params;
+  console.log({id});
+
+  Tag.findByIdAndRemove(id)
+    .then(() => {
+      Note.update({},
+        {$pull: {tags: id}}, {multi: true});
+      res.status(204).end();
+    })
+    .catch(err => {
+      next(err);
+    });
+  // const deleteTagPromise = Tag.findByIdAndRemove({ _id: id });
+  // const deleteInNotesPromise = Note.update(
+  //   { },
+  //   { $pull: { tags: { _id: id } } },
+  //   { multi: true }
+  // );
+
+  // Promise.all([deleteTagPromise, deleteInNotesPromise])
+  //   .then(resultsArray => {
+  //     const tagResult = resultsArray[0];
+  // .then({})
+  // .then(() => {
+  //   res.status(204).end();
+  // })
+});
 
 module.exports = router;
 

@@ -66,6 +66,14 @@ router.post('/notes', (req, res, next) => {
     return next(err);
   }
 
+  // tags.forEach(tag => {
+  //   if(!mongoose.Types.ObjectId.isValid(tag.id)) {
+  //     const err = new Error('invalid `tag`');
+  //     err.status = 400;
+  //     return next(err);
+  //   }
+  // });
+
   const newItem = { title, content, folderId };
 
   Note.create(newItem)
