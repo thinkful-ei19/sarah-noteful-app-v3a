@@ -97,7 +97,8 @@ router.post('/notes', (req, res, next) => {
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/notes/:id', (req, res, next) => {
   const { id } = req.params;
-  const { title, content, folderId } = req.body;
+  const { title, content, folderId, tags } = req.body;
+  const updateItem = { title, content, folderId, tags };
 
   /***** Never trust users - validate input *****/
   if (!title) {
@@ -112,10 +113,26 @@ router.put('/notes/:id', (req, res, next) => {
     return next(err);
   }
 
-  const updateItem = { title, content, folderId };
+  if (mongoose.Types.ObjectId.isValid(folderId)) {
+    updateItem.folderId = folderId;
+  }
+
+  if (tags) {
+    tags.forEach(id => {
+      console.log(id);
+      if(!mongoose.Types.ObjectId.isValid(id)) {
+        const err = new Error('invalid `tag`');
+        err.status = 400;
+        return next(err);
+      }
+    });
+  }
+
+  
   const options = { new: true };
 
   Note.findByIdAndUpdate(id, updateItem, options)
+    .populate('tags')
     .then(result => {
       if (result) {
         res.json(result);
