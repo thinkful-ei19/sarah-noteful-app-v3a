@@ -122,7 +122,7 @@ describe.only('Noteful API - Tags', function () {
   });
 
   //POST tags tests
-  describe.only('POST new tags', function() {
+  describe('POST new tags', function() {
     it('should POST new tags with the right fields', function() {
       const newTag = {'name': 'Test tag'};
       let res;
@@ -164,4 +164,102 @@ describe.only('Noteful API - Tags', function () {
         });
     });
   });
+
+  //PUT tags tests
+  describe('PUT updates tags, requests to /api/tags/:id', function () {
+
+    it('should update the tag when provided proper valid data', function () {
+      const updateTag = {
+        'name': 'New name'
+      };
+      let data;
+      return Tag.findOne()
+        .then(_data => {
+          data = _data;
+          return chai.request(app)
+            .put(`/api/tags/${data.id}`)
+            .send(updateTag);
+        })
+        .then(function (res) {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.have.keys('id', 'name');
+
+          expect(res.body.id).to.equal(data.id);
+          expect(res.body.name).to.equal(updateTag.name);
+        });
+    });
+
+
+    it('should respond with a 400 for improperly formatted id', function () {
+      const updateTag = {
+        'name': 'New name'
+      };
+      const badId = 'sarah';
+
+      return chai.request(app)
+        .put(`/api/tags/${badId}`)
+        .send(updateTag)
+        .catch(err => err.response)
+        .then(res => {
+          expect(res).to.have.status(400);
+          expect(res.body.message).to.equal('Not a valid id');
+        });
+    });
+
+    it('should respond with a 404 for an invalid id', function () {
+      const updateTag = {
+        'name': 'New name'
+      };
+
+      return chai.request(app)
+        .put('/api/tags/222222222222222222222210')
+        .send(updateTag)
+        .catch(err => err.response)
+        .then(res => {
+          console.log(res.body);
+          expect(res).to.have.status(404);
+          expect(res.body.message).to.equal('Not Found');
+        });
+    });
+
+    it('should return an error when missing "name" field', function () {
+      const updateTag = {
+        'up': 'down'
+      };
+
+      return chai.request(app)
+        .put('/api/tags/222222222222222222222200')
+        .send(updateTag)
+        .catch(err => err.response)
+        .then(res => {
+          expect(res).to.have.status(400);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body.message).to.equal('Missing `name` in request body');
+        });
+    });
+
+  });
+
+  describe('DELETE  /api/tags/:id', function () {
+
+    it('should delete a tag by id', function () {
+      let data;
+      return Tag.findOne()
+        .then(_data => {
+          data = _data;
+          return chai.request(app).delete(`/api/tags/${data.id}`);
+        })
+        .then(function (res) {
+          console.log(res.body);
+          expect(res).to.have.status(204);
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.be.empty;
+        });
+    });
+
+  });
+
 });

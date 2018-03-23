@@ -191,7 +191,7 @@ describe('Noteful API - Folders', function () {
         .catch(err => err.response)
         .then(res => {
           expect(res).to.have.status(400);
-          expect(res.body.message).to.eq('The `id` is not valid');
+          expect(res.body.message).to.equal('The `id` is not valid');
         });
     });
 

@@ -105,7 +105,11 @@ router.put('/tags/:id', (req, res, next) => {
   const options = {new: true};
   Tag.findByIdAndUpdate(id, updateTag, options)
     .then(result => {
-      res.json(result);
+      if (result) {
+        res.json(result);
+      } else {
+        next();
+      }
     })
     .catch(err => {
       if (err.code === 11000) {
