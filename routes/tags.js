@@ -21,6 +21,32 @@ router.get('/tags', (req, res, next) => {
     });
 });
 
+//GET tag by id
+// Add validation that protects against an invalid ObjectId that returns a 400 response and a user-friendly response
+// Add condition that checks the result and returns a 200 response with the result or a 404 Not Found
+router.get('/tags/:id', (req, res, next) => {
+  const {id} = req.params;
+  console.log(id);
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    const err = new Error('Not a valid `id`');
+    err.status = 400;
+    return next(err);
+  }
+
+  Tag.findById(id)
+    .then(result => {
+      if(result) {
+        res.json(result);
+      } else {
+        next();
+      }
+    })
+    .catch( err => {
+      next(err);
+    });
+});
+
 
 module.exports = router;
 
